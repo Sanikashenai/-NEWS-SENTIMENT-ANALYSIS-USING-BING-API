@@ -25,6 +25,7 @@ ingested json file through rest api into bing API resource using Data Factory Pi
 #STEP 3: Data Tranformation using Synapse Notebooks 
 
 df = spark.read.option("multiline", "true").json("Files/bing-latest-news.json")
+
 df now is a Spark DataFrame containing JSON data from "Files/bing-latest-news.json".
 display(df)
 
@@ -48,11 +49,17 @@ print(news_json)
 
 ![image](https://github.com/user-attachments/assets/219437ce-5699-4196-b790-05a0e1fa2640)
 title = []
+
 description = []
+
 category = []
+
 url = []
+
 image = []
+
 provider = []
+
 datePublished =[]
 
 Process each JSON object in the list
