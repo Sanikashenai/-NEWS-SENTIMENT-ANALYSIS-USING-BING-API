@@ -229,6 +229,15 @@ display(df)
 ![image](https://github.com/user-attachments/assets/fc81a60d-0bbb-4fa8-a7d2-667ef33218e6)
 ![image](https://github.com/user-attachments/assets/b26ce934-7a3a-4f46-a373-37fd87b8b0be)
 
+# STEP 5:built power BI
+built power bi report from semantic model
+![image](https://github.com/user-attachments/assets/1f9c2bea-b7da-42fc-ba0d-cbbb47174fd8)
+
+![image](https://github.com/user-attachments/assets/fdf1a420-93cf-4e00-ad4f-74d1d1766e80)
+
+
+
+
 
 
 
