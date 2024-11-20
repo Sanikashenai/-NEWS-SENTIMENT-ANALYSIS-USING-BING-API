@@ -55,7 +55,7 @@ image = []
 provider = []
 datePublished =[]
 
-# Process each JSON object in the list
+Process each JSON object in the list
 for json_str in json_list:
     try:
         # Parse the JSON string into a distionary
@@ -74,12 +74,11 @@ for json_str in json_list:
 
     except Exception as e:
         print(f"Error processing JSON object: {e}")
+        
   title
   ![image](https://github.com/user-attachments/assets/15576f39-19a6-48c6-8b01-d1bd8d7923d4)
-  from pyspark.sql.types import StructType, StructField, StringType
-
+from pyspark.sql.types import StructType, StructField, StringType
 data=list(zip(title,description,category,url,image,provider,datePublished))
-
 schema=StructType([
     StructField("title", StringType(), True),
     StructField("description", StringType(), True),
@@ -90,14 +89,15 @@ schema=StructType([
     StructField("datePublished", StringType(), True)
 
 ])
-
 df_cleaned=spark.createDataFrame(data, schema=schema)
 display(df_cleaned)
 ![image](https://github.com/user-attachments/assets/846ccae1-c956-49e5-a78c-2c7082b522ff)
+
 from pyspark.sql.functions import to_date,date_format
 df_cleaned_final=df_cleaned.withColumn("datePublished",date_format(to_date("datePublished"),"dd-mm-yyyy"))
 display(df_cleaned_final)
 ![image](https://github.com/user-attachments/assets/4605a94c-e51e-4461-8aaf-9f709f591e06)
+
 from pyspark.sql.utils import AnalysisException
 
 try:
@@ -136,6 +136,7 @@ select count(*) from bing_lake_db.tbl_latest_news
 ![image](https://github.com/user-attachments/assets/a63f0681-aaee-475c-b297-7c47480b00f5)
 
 #Step 4:Real time sentiment analysis 
+
 df = spark.sql("SELECT * FROM bing_lake_db.tbl_latest_news LIMIT 1000")
 display(df)
 ![image](https://github.com/user-attachments/assets/57db0b69-0005-47c3-b414-643b06132622)
@@ -149,13 +150,16 @@ model = (AnalyzeText()
         .setErrorCol("error"))
 result = model.transform(df)
 display(result)
+
 ![image](https://github.com/user-attachments/assets/e0f0a1e2-df69-4300-b168-a5c76d2671d0)
 from pyspark.sql.functions import col
 sentiment_df = result.withColumn("sentiment", col("response.documents.sentiment"))
 display(sentiment_df)
+
 ![image](https://github.com/user-attachments/assets/f84849eb-c76a-431a-8454-a80989a87014)
 sentiment_df_final = sentiment_df.drop("error","response")
 display(sentiment_df_final)
+
 ![image](https://github.com/user-attachments/assets/6aaec8db-cfe1-48c2-9ba3-35452be1f394)
 from pyspark.sql.utils import AnalysisException
 
@@ -191,12 +195,15 @@ except AnalysisException:
                  """)
 df=spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis")
 display(df)
+
 ![image](https://github.com/user-attachments/assets/3a8fc668-373a-4fe6-9132-c580b11c17c7)
+
 df.printSchema()
 ![image](https://github.com/user-attachments/assets/89907507-7def-4ccc-bbe0-8f1def564b4c)
 df.write.format('delta').mode("overwrite").option("overwriteSchema","True").saveAsTable(table_name)
 df = spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis LIMIT 1000")
 display(df)
+
 ![image](https://github.com/user-attachments/assets/fc81a60d-0bbb-4fa8-a7d2-667ef33218e6)
 ![image](https://github.com/user-attachments/assets/b26ce934-7a3a-4f46-a373-37fd87b8b0be)
 
