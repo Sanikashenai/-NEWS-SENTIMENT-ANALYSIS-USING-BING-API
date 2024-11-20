@@ -1,10 +1,10 @@
-#  NEWS SENTIMENT ANALYSIS USING BING API
+![image](https://github.com/user-attachments/assets/a41b9cfe-6d66-4951-bb3a-8a69e132096e)#  NEWS SENTIMENT ANALYSIS USING BING API
 This is end to end microsoft fabric project that analyze of sentiments of news
 
 https://github.com/user-attachments/assets/48119434-2fe7-4f33-b8d2-e3be0db4de1c
 
 
-STEP 1: convert csv to json using google sheets
+#STEP 1: convert csv to json using google sheets
 
 ![import](https://github.com/user-attachments/assets/6cf0cc03-0b15-4e28-ab10-d188bd820894)
 
@@ -16,16 +16,16 @@ Json file is readyyy!!!
 
 ![image](https://github.com/user-attachments/assets/9ad45cdb-22a0-407e-9204-b4fccaf6db5a)
 
-STEP2:Ingest data using Bing API
+#STEP2:Ingest data using Bing API
 create resource in microsoft azure and search bing search & select Bing search API(Free) which returns feature of Bing News Search
 ingested json file through rest api into bing API resource using Data Factory Pipeline 
 
 ![ingest](https://github.com/user-attachments/assets/b8d59d2b-808d-44b9-a67d-c739c7eef6fe)
 
-STEP 3: Data Tranformation using Synapse Notebooks 
+#STEP 3: Data Tranformation using Synapse Notebooks 
 
 df = spark.read.option("multiline", "true").json("Files/bing-latest-news.json")
-# df now is a Spark DataFrame containing JSON data from "Files/bing-latest-news.json".
+df now is a Spark DataFrame containing JSON data from "Files/bing-latest-news.json".
 display(df)
 
 ![image](https://github.com/user-attachments/assets/75350b5b-4029-47d9-bbd6-725c917960f6)
@@ -134,6 +134,75 @@ except AnalysisException:
 
 select count(*) from bing_lake_db.tbl_latest_news
 ![image](https://github.com/user-attachments/assets/a63f0681-aaee-475c-b297-7c47480b00f5)
+
+#Step 4:Real time sentiment analysis 
+df = spark.sql("SELECT * FROM bing_lake_db.tbl_latest_news LIMIT 1000")
+display(df)
+![image](https://github.com/user-attachments/assets/57db0b69-0005-47c3-b414-643b06132622)
+import synapse.ml.core
+from synapse.ml.services import AnalyzeText
+#configuring input and output column and importing model
+model = (AnalyzeText()
+        .setTextCol("description")
+        .setKind("SentimentAnalysis")
+        .setOutputCol("response")
+        .setErrorCol("error"))
+result = model.transform(df)
+display(result)
+![image](https://github.com/user-attachments/assets/e0f0a1e2-df69-4300-b168-a5c76d2671d0)
+from pyspark.sql.functions import col
+sentiment_df = result.withColumn("sentiment", col("response.documents.sentiment"))
+display(sentiment_df)
+![image](https://github.com/user-attachments/assets/f84849eb-c76a-431a-8454-a80989a87014)
+sentiment_df_final = sentiment_df.drop("error","response")
+display(sentiment_df_final)
+![image](https://github.com/user-attachments/assets/6aaec8db-cfe1-48c2-9ba3-35452be1f394)
+from pyspark.sql.utils import AnalysisException
+
+try:
+
+    table_name = 'bing_lake_db.sentiment_Analysis'
+
+    sentiment_df_final.write.format("delta").saveAsTable(table_name)
+
+except AnalysisException:
+
+    print("Table Already exists")
+
+    sentiment_df_final.createOrReplaceTempView("vw_sentiment_df_final")
+
+    spark.sql(f"""  MERGE INTO {table_name} target_table
+                    USING vw_sentiment_df_final source_view
+                     
+                     ON source_view.url = target_table.url
+                     
+                     WHEN MATCHED AND
+                     source_view.title <> target_table.title OR
+                     source_view.description <> target_table.description OR
+                     source_view.category <> target_table.category OR
+                     source_view.image <> target_table.image OR
+                     source_view.provider <> target_table.provider OR
+                     source_view.datePublished <> target_table.datePublished
+                     
+                     THEN UPDATE SET *
+                     
+                     WHEN NOT MATCHED THEN INSERT *
+                     
+                 """)
+df=spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis")
+display(df)
+![image](https://github.com/user-attachments/assets/3a8fc668-373a-4fe6-9132-c580b11c17c7)
+df.printSchema()
+![image](https://github.com/user-attachments/assets/89907507-7def-4ccc-bbe0-8f1def564b4c)
+df.write.format('delta').mode("overwrite").option("overwriteSchema","True").saveAsTable(table_name)
+df = spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis LIMIT 1000")
+display(df)
+![image](https://github.com/user-attachments/assets/fc81a60d-0bbb-4fa8-a7d2-667ef33218e6)
+![image](https://github.com/user-attachments/assets/b26ce934-7a3a-4f46-a373-37fd87b8b0be)
+
+
+
+
 
 
 
