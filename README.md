@@ -22,7 +22,127 @@ ingested json file through rest api into bing API resource using Data Factory Pi
 
 ![ingest](https://github.com/user-attachments/assets/b8d59d2b-808d-44b9-a67d-c739c7eef6fe)
 
-STEP 3: Data Tranformation using 
+STEP 3: Data Tranformation using Synapse Notebooks 
+
+df = spark.read.option("multiline", "true").json("Files/bing-latest-news.json")
+# df now is a Spark DataFrame containing JSON data from "Files/bing-latest-news.json".
+display(df)
+
+![image](https://github.com/user-attachments/assets/75350b5b-4029-47d9-bbd6-725c917960f6)
+df = df.select("value")
+display(df)
+
+![image](https://github.com/user-attachments/assets/1dfb5f2b-7d30-4bfc-a507-00a443f842c1)
+from pyspark.sql.functions import explode
+df_exploded = df.select(explode(df["value"]).alias("json_object"))
+display(df_exploded)
+
+![image](https://github.com/user-attachments/assets/79c07309-46f5-4cc2-a498-dcfb2831d05e)
+json_list = df_exploded.toJSON().collect()
+print(json_list[25])
+
+![image](https://github.com/user-attachments/assets/8f0bd6c8-aedb-4fe3-a80c-e25fef340d02)
+import json
+news_json = json.loads(json_list[25])
+print(news_json)
+
+![image](https://github.com/user-attachments/assets/219437ce-5699-4196-b790-05a0e1fa2640)
+title = []
+description = []
+category = []
+url = []
+image = []
+provider = []
+datePublished =[]
+
+# Process each JSON object in the list
+for json_str in json_list:
+    try:
+        # Parse the JSON string into a distionary
+        article = json.loads(json_str)
+        
+        if article["json_object"].get("category") and article["json_object"].get("image", {}).get("thumbnail", {}).get("contentUrl"):
+
+            #Extract information from the dictionary
+            title.append(article["json_object"]["name"])
+            description.append(article["json_object"]["description"])
+            category.append(article["json_object"]["category"])
+            url.append(article["json_object"]["url"])
+            image.append(article["json_object"]["image"]["thumbnail"]["contentUrl"])
+            provider.append(article["json_object"]["provider"][0]['name'])
+            datePublished.append(article["json_object"]["datePublished"])
+
+    except Exception as e:
+        print(f"Error processing JSON object: {e}")
+  title
+  ![image](https://github.com/user-attachments/assets/15576f39-19a6-48c6-8b01-d1bd8d7923d4)
+  from pyspark.sql.types import StructType, StructField, StringType
+
+data=list(zip(title,description,category,url,image,provider,datePublished))
+
+schema=StructType([
+    StructField("title", StringType(), True),
+    StructField("description", StringType(), True),
+    StructField("category", StringType(), True),
+    StructField("url", StringType(), True),
+    StructField("image", StringType(), True),
+    StructField("provider", StringType(), True),
+    StructField("datePublished", StringType(), True)
+
+])
+
+df_cleaned=spark.createDataFrame(data, schema=schema)
+display(df_cleaned)
+![image](https://github.com/user-attachments/assets/846ccae1-c956-49e5-a78c-2c7082b522ff)
+from pyspark.sql.functions import to_date,date_format
+df_cleaned_final=df_cleaned.withColumn("datePublished",date_format(to_date("datePublished"),"dd-mm-yyyy"))
+display(df_cleaned_final)
+![image](https://github.com/user-attachments/assets/4605a94c-e51e-4461-8aaf-9f709f591e06)
+from pyspark.sql.utils import AnalysisException
+
+try:
+
+    table_name = 'bing_lake_db.tbl_latest_news'
+
+    df_cleaned_final.write.format("delta").saveAsTable(table_name)
+
+except AnalysisException:
+
+    print("Table Already exists")
+
+    df_cleaned_final.createOrReplaceTempView("vw_df_cleaned_final")
+
+    spark.sql(f"""  MERGE INTO {table_name} target_table
+                    USING vw_df_cleaned_final source_view
+                     
+                     ON source_view.url = target_table.url
+                     
+                     WHEN MATCHED AND
+                     source_view.title <> target_table.title OR
+                     source_view.description <> target_table.description OR
+                     source_view.category <> target_table.category OR
+                     source_view.image <> target_table.image OR
+                     source_view.provider <> target_table.provider OR
+                     source_view.datePublished <> target_table.datePublished
+                     
+                     THEN UPDATE SET *
+                     
+                     WHEN NOT MATCHED THEN INSERT *
+                     
+                 """)
+    %%sql 
+
+select count(*) from bing_lake_db.tbl_latest_news
+![image](https://github.com/user-attachments/assets/a63f0681-aaee-475c-b297-7c47480b00f5)
+
+
+
+
+
+
+
+
+
 
 
 
