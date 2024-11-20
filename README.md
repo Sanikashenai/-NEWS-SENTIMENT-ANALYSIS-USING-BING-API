@@ -235,6 +235,11 @@ built power bi report from semantic model
 
 ![image](https://github.com/user-attachments/assets/fdf1a420-93cf-4e00-ad4f-74d1d1766e80)
 
+# Step 6:Create Alert
+
+![image](https://github.com/user-attachments/assets/6bad7231-b3f4-4de7-a7c6-328e74ff27d4)
+
+
 
 
 
