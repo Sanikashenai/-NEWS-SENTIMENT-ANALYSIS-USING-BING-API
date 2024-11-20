@@ -16,13 +16,13 @@ Json file is readyyy!!!
 
 ![image](https://github.com/user-attachments/assets/9ad45cdb-22a0-407e-9204-b4fccaf6db5a)
 
-#STEP2:Ingest data using Bing API
+# STEP2:Ingest data using Bing API
 create resource in microsoft azure and search bing search & select Bing search API(Free) which returns feature of Bing News Search
 ingested json file through rest api into bing API resource using Data Factory Pipeline 
 
 ![ingest](https://github.com/user-attachments/assets/b8d59d2b-808d-44b9-a67d-c739c7eef6fe)
 
-#STEP 3: Data Tranformation using Synapse Notebooks 
+# STEP 3: Data Tranformation using Synapse Notebooks 
 
 df = spark.read.option("multiline", "true").json("Files/bing-latest-news.json")
 
@@ -164,7 +164,7 @@ except AnalysisException:
 select count(*) from bing_lake_db.tbl_latest_news
 ![image](https://github.com/user-attachments/assets/a63f0681-aaee-475c-b297-7c47480b00f5)
 
-#Step 4:Real time sentiment analysis 
+# Step 4:Real time sentiment analysis 
 
 df = spark.sql("SELECT * FROM bing_lake_db.tbl_latest_news LIMIT 1000")
 display(df)
