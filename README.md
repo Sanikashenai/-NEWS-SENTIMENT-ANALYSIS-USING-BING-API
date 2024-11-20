@@ -11,6 +11,10 @@ after importing ,go to help and search app script edit code according to importe
 
 ![image](https://github.com/user-attachments/assets/2e8310f0-4f22-4f69-861a-ae0290ad2381)
 
+json file is readyyy!!!
+
+![image](https://github.com/user-attachments/assets/9ad45cdb-22a0-407e-9204-b4fccaf6db5a)
+
 
 
 
