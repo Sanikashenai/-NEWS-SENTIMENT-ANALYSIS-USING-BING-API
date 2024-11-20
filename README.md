@@ -161,25 +161,17 @@ sentiment_df_final = sentiment_df.drop("error","response")
 display(sentiment_df_final)
 
 ![image](https://github.com/user-attachments/assets/6aaec8db-cfe1-48c2-9ba3-35452be1f394)
+
 from pyspark.sql.utils import AnalysisException
-
 try:
-
     table_name = 'bing_lake_db.sentiment_Analysis'
-
     sentiment_df_final.write.format("delta").saveAsTable(table_name)
-
 except AnalysisException:
-
     print("Table Already exists")
-
     sentiment_df_final.createOrReplaceTempView("vw_sentiment_df_final")
-
     spark.sql(f"""  MERGE INTO {table_name} target_table
                     USING vw_sentiment_df_final source_view
-                     
                      ON source_view.url = target_table.url
-                     
                      WHEN MATCHED AND
                      source_view.title <> target_table.title OR
                      source_view.description <> target_table.description OR
@@ -187,12 +179,10 @@ except AnalysisException:
                      source_view.image <> target_table.image OR
                      source_view.provider <> target_table.provider OR
                      source_view.datePublished <> target_table.datePublished
-                     
                      THEN UPDATE SET *
-                     
                      WHEN NOT MATCHED THEN INSERT *
-                     
                  """)
+                 
 df=spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis")
 display(df)
 
@@ -203,6 +193,7 @@ df.printSchema()
 ![image](https://github.com/user-attachments/assets/89907507-7def-4ccc-bbe0-8f1def564b4c)
 
 df.write.format('delta').mode("overwrite").option("overwriteSchema","True").saveAsTable(table_name)
+
 df = spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis LIMIT 1000")
 display(df)
 
