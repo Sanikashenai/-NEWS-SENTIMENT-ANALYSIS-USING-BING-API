@@ -81,8 +81,8 @@ for json_str in json_list:
   title
   
 ![image](https://github.com/user-attachments/assets/15576f39-19a6-48c6-8b01-d1bd8d7923d4)
-from pyspark.sql.types import StructType, StructField, StringType
 
+from pyspark.sql.types import StructType, StructField, StringType
 data=list(zip(title,description,category,url,image,provider,datePublished))
 
 schema=StructType([
@@ -104,7 +104,9 @@ schema=StructType([
 ])
 
 df_cleaned=spark.createDataFrame(data, schema=schema)
+
 display(df_cleaned)
+
 ![image](https://github.com/user-attachments/assets/846ccae1-c956-49e5-a78c-2c7082b522ff)
 
 from pyspark.sql.functions import to_date,date_format
