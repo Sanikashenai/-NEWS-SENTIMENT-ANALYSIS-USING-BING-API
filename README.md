@@ -67,9 +67,7 @@ for json_str in json_list:
     try:
         # Parse the JSON string into a distionary
         article = json.loads(json_str)
-        
         if article["json_object"].get("category") and article["json_object"].get("image", {}).get("thumbnail", {}).get("contentUrl"):
-
             #Extract information from the dictionary
             title.append(article["json_object"]["name"])
             description.append(article["json_object"]["description"])
@@ -78,21 +76,26 @@ for json_str in json_list:
             image.append(article["json_object"]["image"]["thumbnail"]["contentUrl"])
             provider.append(article["json_object"]["provider"][0]['name'])
             datePublished.append(article["json_object"]["datePublished"])
-
     except Exception as e:
-        print(f"Error processing JSON object: {e}")
-        
+        print(f"Error processing JSON object: {e}")  
   title
-  ![image](https://github.com/user-attachments/assets/15576f39-19a6-48c6-8b01-d1bd8d7923d4)
+  
+![image](https://github.com/user-attachments/assets/15576f39-19a6-48c6-8b01-d1bd8d7923d4)
 from pyspark.sql.types import StructType, StructField, StringType
 data=list(zip(title,description,category,url,image,provider,datePublished))
 schema=StructType([
     StructField("title", StringType(), True),
+    
     StructField("description", StringType(), True),
+    
     StructField("category", StringType(), True),
+    
     StructField("url", StringType(), True),
+    
     StructField("image", StringType(), True),
+    
     StructField("provider", StringType(), True),
+    
     StructField("datePublished", StringType(), True)
 
 ])
