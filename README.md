@@ -199,7 +199,9 @@ display(df)
 ![image](https://github.com/user-attachments/assets/3a8fc668-373a-4fe6-9132-c580b11c17c7)
 
 df.printSchema()
+
 ![image](https://github.com/user-attachments/assets/89907507-7def-4ccc-bbe0-8f1def564b4c)
+
 df.write.format('delta').mode("overwrite").option("overwriteSchema","True").saveAsTable(table_name)
 df = spark.sql("SELECT * FROM bing_lake_db.sentiment_analysis LIMIT 1000")
 display(df)
