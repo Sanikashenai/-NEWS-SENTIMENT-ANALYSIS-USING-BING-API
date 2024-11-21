@@ -235,7 +235,13 @@ built power bi report from semantic model
 
 ![image](https://github.com/user-attachments/assets/fdf1a420-93cf-4e00-ad4f-74d1d1766e80)
 
-# Step 6:Create Alert
+# Step 6:Create Deployment pipeline
+created deployment pipeline to ensure all workflow
+
+![image](https://github.com/user-attachments/assets/a64316f8-770c-4e5a-8cba-6552592e4ea7)
+
+# Step 7:Create Alert
+create alert to microsoft teams or G-mail according to condition for positive sentiments
 
 ![image](https://github.com/user-attachments/assets/6bad7231-b3f4-4de7-a7c6-328e74ff27d4)
 
