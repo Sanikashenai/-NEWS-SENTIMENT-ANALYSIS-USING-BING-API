@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/a41b9cfe-6d66-4951-bb3a-8a69e132096e)#  NEWS SENTIMENT ANALYSIS USING BING API
+#  NEWS SENTIMENT ANALYSIS USING BING API
 This is end to end microsoft fabric project that analyze of sentiments of news
 
 https://github.com/user-attachments/assets/48119434-2fe7-4f33-b8d2-e3be0db4de1c
